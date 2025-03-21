@@ -1,0 +1,32 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# Data files (optional, comment out if you want to track data)
+data/raw/*
+data/processed/*
+data/external/*
+
+# Model files (optional, comment out if you want to track models)
+models/*
+
+# OS specific files
+.DS_Store
+
+# IDE specific files
+.idea/
+.vscode/
