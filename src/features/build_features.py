@@ -10,6 +10,10 @@ from pathlib import Path
 from .temporal_features import create_temporal_features
 from .spatial_features import create_airport_features
 from .carrier_features import create_carrier_features
+# Import new feature modules
+from .cyclical_features import create_cyclical_features
+from .interaction_features import create_interaction_features
+from .network_features import create_network_features
 
 def convert_data_types(df):
     """Convert data types and clean the input dataframe."""
@@ -65,7 +69,7 @@ def build_features(input_filepath, output_filepath, is_train=True, feature_store
             print(f"Loading training data reference from {train_path}")
             train_data = pd.read_csv(train_path)
     
-    # apply feature transformations
+    # apply feature transformations - original features
     print("Creating temporal features")
     df = create_temporal_features(df)
     
@@ -75,13 +79,20 @@ def build_features(input_filepath, output_filepath, is_train=True, feature_store
     print("Creating carrier features")
     df = create_carrier_features(df, train_data)
     
-    # create interaction features
-    print("Creating interaction features")
+    # create interaction features from original pipeline
+    print("Creating basic interaction features")
     df['hub_to_hub'] = df['origin_is_hub'] * df['dest_is_hub']
     df['peak_weekend'] = df['is_weekend'] * df['is_peak_travel_season']
-    df['carrier_at_hub'] = (df['carrier_size_rank'] > 0.8) * df['origin_is_hub']
-    df['evening_weekend'] = ((df['time_period'] == 'Evening') | (df['time_period'] == 'Night')) * df['is_weekend']
-    df['long_distance_peak'] = ((df['distance_category'] == 'Long') | (df['distance_category'] == 'Very Long')) * df['is_peak_travel_season']
+    
+    # NEW ENHANCED FEATURES
+    print("Creating cyclical features")
+    df = create_cyclical_features(df)
+    
+    print("Creating advanced interaction features")
+    df = create_interaction_features(df)
+    
+    print("Creating network effect features")
+    df = create_network_features(df, train_data)
     
     # save a reference copy of the training data for future transformations
     if is_train and feature_store_path is not None:
