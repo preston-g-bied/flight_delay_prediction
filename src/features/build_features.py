@@ -79,6 +79,9 @@ def build_features(input_filepath, output_filepath, is_train=True, feature_store
     print("Creating interaction features")
     df['hub_to_hub'] = df['origin_is_hub'] * df['dest_is_hub']
     df['peak_weekend'] = df['is_weekend'] * df['is_peak_travel_season']
+    df['carrier_at_hub'] = (df['carrier_size_rank'] > 0.8) * df['origin_is_hub']
+    df['evening_weekend'] = ((df['time_period'] == 'Evening') | (df['time_period'] == 'Night')) * df['is_weekend']
+    df['long_distance_peak'] = ((df['distance_category'] == 'Long') | (df['distance_category'] == 'Very Long')) * df['is_peak_travel_season']
     
     # save a reference copy of the training data for future transformations
     if is_train and feature_store_path is not None:
